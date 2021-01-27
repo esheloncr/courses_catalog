@@ -3,6 +3,16 @@
 Courses
 {% endblock title %}
 {% block content %}
+<nav class="Navigate">
+    <a href="admin/">Админка</a>
+    <a href="new">Новый курс</a>
+    <a href="/">На стартовую</a>
+</nav>
 <h1>Каталог курсов</h1>
-{{ courses }}
+{% for course in courses %}
+    <h3><a href="courses/{{ course.pk }}">{{ course.title }}</a></h3>
+    <p>{{ course.description }}</p>
+    <p>{{ course.start_date }}</p>
+    <p>{{ course.end_date }}</p>
+{% endfor %}
 {% endblock content %}

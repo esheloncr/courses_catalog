@@ -1,6 +1,6 @@
 from django.urls import path
 from django.views.generic import TemplateView
-from .views import CoursesDetailView, index, new_course, CoursesListView
+from .views import CoursesDetailView, index, new_course, CoursesListView, edit_course
 
 urlpatterns = [
     path("courses/<int:pk>/",CoursesDetailView.as_view(), name="courses"),
