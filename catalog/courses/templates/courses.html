@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}
+Courses
+{% endblock title %}
+{% block content %}
+<h1>{{ course.title }}</h1>
+<div class="descr">{{ course.description }}</div>
+<div class="start_date">{{ course.start_date }}</div>
+<div class="end_date">{{ course.end_date }}</div>
+{% endblock content %}
