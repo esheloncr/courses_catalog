@@ -7,7 +7,6 @@ class Course(models.Model):
     course_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=128,verbose_name="Название курса")
     description = models.TextField(max_length=512, verbose_name="Описание курса")
-    course_url = models.URLField(max_length=200, default="#")
     start_date = models.DateField(verbose_name="Дата начала курса")
     end_date = models.DateField(verbose_name="Дата окончания курса")
     author = models.ForeignKey(User,verbose_name="Автор поста",on_delete=models.PROTECT, null=True)

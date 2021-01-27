@@ -1,15 +1,32 @@
 from django.shortcuts import render, redirect
-from django.views.generic import ListView, DetailView
-from django.http import HttpResponse
+from django.views.generic import DetailView,ListView
+from django.http import HttpResponse, HttpResponseRedirect
 from .forms import UserForm
 from .models import Course
 # Create your views here.
 
 def index(request):
-    job = Course.objects.latest("pk")
-    a = request.user
-    data = {"title":job.title, "start_date":job.start_date, "user":a}
+    course = Course.objects.latest("pk")
+    user = request.user
+    data = {"title":course.title, "start_date":course.start_date, "user":user}
     return render(request, "index.html",context=data)
+
+def new_course(request):
+    if request.method == "POST":
+        userform = UserForm(request.POST)
+        if userform.is_valid():
+            userform.save()
+            title = userform.cleaned_data['title']
+            description = userform.cleaned_data['description']
+            start_date = userform.cleaned_data['start_date']
+            end_date = userform.cleaned_data['end_date']
+            author = request.user
+            return HttpResponseRedirect('/')
+    else:
+        userform = UserForm()
+    return render(request, "new.html",{"form":userform})
+
+
 
 class CoursesDetailView(DetailView):
     model = Course
@@ -17,4 +34,9 @@ class CoursesDetailView(DetailView):
     queryset = Course.objects.all()
     context_object_name = "course"
 
+class CoursesListView(ListView):
+    model = Course
+    queryset = Course.o
+    template_name = "main.html"
+    context_object_name = "courses"
 

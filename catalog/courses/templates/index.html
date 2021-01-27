@@ -4,6 +4,11 @@ Home page
 {% endblock title %}
 {% block content %}
 <div class="Current user">Вы вошли как {{ user }}</div>
+<nav class="Navigate">
+    <a href="admin/">Админка</a>
+    <a href="new">Новый курс</a>
+    <a href="#">Все курсы</a>
+</nav>
 <h1>Добро пожаловать</h1>
 <div class="Actual">Актуальный курс: {{ title }}<br>Дата начала: {{ start_date }}</div>
 {% endblock content %}

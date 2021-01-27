@@ -4,11 +4,11 @@ from .models import Course
 
 @admin.register(Course)
 class AdminCourse(admin.ModelAdmin):
-    list_display = ('title', 'start_date', 'end_date','course_url')
+    list_display = ('title', 'start_date', 'end_date',)
     list_filter = ('course_id', 'start_date', 'end_date')
     fieldsets = (
         (None, {
-            'fields': ('title','description','course_url', "author")
+            'fields': ('title','description', "author")
         }),
         ('Course date', {
             'fields': ('start_date', 'end_date')
