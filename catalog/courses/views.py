@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.views.generic import DetailView,ListView
+from django.views.generic import DetailView,ListView,UpdateView,DeleteView
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import UserForm
 from .models import Course
@@ -43,7 +43,28 @@ class CoursesDetailView(DetailView):
     template_name = "courses.html"
     queryset = Course.objects.all()
     context_object_name = "course"
-    #extra_context = {"delete":queryset.delete()}
+    #extra_context = {"form":userform}
+
+class CourseEdit(UpdateView):
+    model = Course
+    template_name = "edit.html"
+    fields = [
+        'title',
+        'description',
+        'start_date',
+        'end_date'
+    ]
+    def form_valid(self, form):
+        if form.is_valid():
+            form.save()
+        else:
+            return self.form_valid()
+        return HttpResponseRedirect("main")
+
+class CourseDelete(DeleteView):
+    model = Course
+    success_url = 'main'
+    template_name = "course_delete.html"
 
 class CoursesListView(ListView):
     model = Course

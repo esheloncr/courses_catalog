@@ -3,15 +3,16 @@
 Courses
 {% endblock title %}
 {% block content %}
-<nav class="Navigate">
-    <a href="admin/">Админка</a>
-    <a href="index">На главную</a>
-    <a href="main">Все курсы</a>
-</nav>
+<a href="">Назад</a>
 <h1>{{ course.title }}</h1>
 <div class="descr">{{ course.description }}</div>
 <div class="start_date">{{ course.start_date }}</div>
 <div class="end_date">{{ course.end_date }}</div>
-<a href="edit">Изменить</a>
-<a href="delete">Удалить</a>
+<form method="POST">
+    {% csrf_token %}
+    <table>
+        {{ form.as_p }}
+        <input type="Submit" value="OK">
+    </table>
+</form>
 {% endblock content %}
