@@ -1,15 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views.generic import DetailView,ListView,UpdateView,DeleteView
-from django.http import HttpResponse, HttpResponseRedirect
-from .forms import UserForm
+from django.http import HttpResponseRedirect
+from django.contrib.postgres.search import SearchVector
+from .forms import UserForm, SearchForm
 from .models import Course
 # Create your views here.
-
-def index(request):
-    course = Course.objects.latest("pk")
-    user = request.user
-    data = {"title":course.title, "start_date":course.start_date, "user":user}
-    return render(request, "index.html",context=data)
 
 def new_course(request):
     if request.method == "POST":
@@ -26,6 +21,26 @@ def new_course(request):
         userform = UserForm()
     return render(request, "new.html",{"form":userform})
 
+def post_search(request):
+    form = SearchForm()
+    query = None
+    results = []
+    if 'query' in request.GET:
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            results = Course.objects.annotate(
+                search=SearchVector('title', 'body'),
+            ).filter(search=query)
+    return render(request,
+                  'main.html',
+                  {'form': form,
+                   'query': query,
+                   'results': results})
+
+def catalog(request):
+    return render(request, "index.html")
+
 def edit_course(request):
     if request.method == "POST":
         userform = UserForm(request.POST)
@@ -36,14 +51,14 @@ def edit_course(request):
             return HttpResponseRedirect('/')
     else:
         userform = UserForm()
-    return render(request, "courses.html",{"form":userform})
+    return render(request, "course.html",{"form":userform})
 
 class CoursesDetailView(DetailView):
     model = Course
-    template_name = "courses.html"
+    template_name = "course.html"
     queryset = Course.objects.all()
     context_object_name = "course"
-    #extra_context = {"form":userform}
+
 
 class CourseEdit(UpdateView):
     model = Course
@@ -66,9 +81,13 @@ class CourseDelete(DeleteView):
     success_url = 'main'
     template_name = "course_delete.html"
 
-class CoursesListView(ListView):
+def test(request):
+    return render(request, "base_catalog.html")
+
+"""class CoursesListView(ListView):
     model = Course
     queryset = Course.objects.all()
     template_name = "main.html"
-    context_object_name = "courses"
+    context_object_name = "courses"""
+
 
