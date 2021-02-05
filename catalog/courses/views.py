@@ -41,18 +41,6 @@ def post_search(request):
 def catalog(request):
     return render(request, "index.html")
 
-def edit_course(request):
-    if request.method == "POST":
-        userform = UserForm(request.POST)
-        if userform.is_valid():
-            a = Course.objects.get(pk=1)
-            f = Course(request.POST, instance=a)
-            f.save()
-            return HttpResponseRedirect('/')
-    else:
-        userform = UserForm()
-    return render(request, "course.html",{"form":userform})
-
 class CoursesDetailView(DetailView):
     model = Course
     template_name = "course.html"
@@ -62,19 +50,15 @@ class CoursesDetailView(DetailView):
 
 class CourseEdit(UpdateView):
     model = Course
-    template_name = "edit.html"
-    fields = [
-        'title',
-        'description',
-        'start_date',
-        'end_date'
-    ]
+    template_name = "new_edit.html"
+    form_class = UserForm
     def form_valid(self, form):
         if form.is_valid():
             form.save()
         else:
             return self.form_valid()
-        return HttpResponseRedirect("main")
+        return HttpResponseRedirect("/")
+
 
 class CourseDelete(DeleteView):
     model = Course
@@ -82,7 +66,7 @@ class CourseDelete(DeleteView):
     template_name = "course_delete.html"
 
 def test(request):
-    return render(request, "base_catalog.html")
+    return render(request, "new_edit.html")
 
 """class CoursesListView(ListView):
     model = Course

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{% endblock title %}
+{% block content %}
+<nav class="Navigate">
+    <a href="admin/">Админка</a>
+    <a href="/">На главную</a>
+    <a href="main">Все курсы</a>
+</nav>
+<h1>Инициализация</h1>
+<form method="POST">
+    {% csrf_token %}
+    <table>
+        {{ form }}
+        <input type="submit" value="submit">
+    </table>
+</form>
+{% endblock content %}

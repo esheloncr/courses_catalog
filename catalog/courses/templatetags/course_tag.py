@@ -1,7 +1,6 @@
 from django import template
 from ..models import Course
 
-
 register = template.Library()
 
 
@@ -13,3 +12,4 @@ def get_courses():
 @register.simple_tag()
 def get_query():
     return Course.objects.all()
+

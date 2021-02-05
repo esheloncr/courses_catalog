@@ -17,14 +17,4 @@ Courses
     <p>Дата начала курса: {{ course.start_date }}</p>
     <p>Дата окончания курса: {{ course.end_date }}</p>
 {% endfor %}
-<!--
-<h1>Каталог курсов</h1>
-{% get_courses as courses %}
-{% for course in courses %}
-    <h3><a href="courses/{{ course.pk }}">{{ course.title }}</a></h3>
-    <p>{{ course.description }}</p>
-    <p>Дата начала курса: {{ course.start_date }}</p>
-    <p>Дата окончания курса: {{ course.end_date }}</p>
-{% endfor %}
--->
 {% endblock content %}

@@ -69,7 +69,7 @@
       {% get_courses as db %}
       <h1 class="display-4 font-italic">{{ db.title }}</h1>
       <p class="lead my-3">{{ db.description }}</p>
-      <p class="lead mb-0">{{ db.start_date|date:"d,M,Y" }}</p>
+      <p class="lead mb-0">{{ db.start_date|date:"d.M.Y" }}</p>
       <!-- <a href="#" class="text-white fw-bold">Дата начала курса</a> Добавить ссылку для перехода на курс -->
     </div>
   </div>
@@ -83,8 +83,8 @@
         {% for course in bd %}
           <h3 class="blog-post-title"><a href="course/{{ course.pk }}">{{ course.title}}</a></h3>
           <p>{{ course.description }}</p>
-          <p>Дата начала курса: {{ course.start_date|date:"d,M,Y," }}</p>
-          <p>Дата окончания курса: {{ course.end_date|date:"d,M,Y" }}</p>
+          <p>Дата начала курса: {{ course.start_date|date:"d.M.Y." }}</p>
+          <p>Дата окончания курса: {{ course.end_date|date:"d.M.Y" }}</p>
         {% endfor %}
       </article><!-- /.blog-post -->
     </div>
