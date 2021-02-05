@@ -84,7 +84,7 @@
           <form method="POST">
               {% csrf_token %}
               <table>
-                  {{ form }}
+                  {{ form.as_p }}
               </table>
               <button class="btn btn-sm btn-outline-secondary">Отправить</button>
           </form>

@@ -1,10 +1,22 @@
 from django.shortcuts import render
-from django.views.generic import DetailView,ListView,UpdateView,DeleteView
+from django.views.generic import DetailView,ListView,UpdateView,DeleteView,CreateView
 from django.http import HttpResponseRedirect
 from django.contrib.postgres.search import SearchVector
 from .forms import UserForm, SearchForm
 from .models import Course
 # Create your views here.
+
+class NewCourse(CreateView):
+    model = Course
+    form_class = UserForm
+    template_name = "new.html"
+    def form_valid(self, form):
+        if form.is_valid():
+            form.save()
+        else:
+            return self.form_valid()
+        return HttpResponseRedirect("/")
+
 
 def new_course(request):
     if request.method == "POST":
@@ -62,8 +74,8 @@ class CourseEdit(UpdateView):
 
 class CourseDelete(DeleteView):
     model = Course
-    success_url = 'main'
-    template_name = "course_delete.html"
+    success_url = '../../'
+    template_name = "new_edit.html"
 
 def test(request):
     return render(request, "new_edit.html")
