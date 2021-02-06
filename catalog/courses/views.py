@@ -1,15 +1,17 @@
 from django.shortcuts import render
-from django.views.generic import DetailView,ListView,UpdateView,DeleteView,CreateView
+from django.views.generic import DetailView,UpdateView,DeleteView,CreateView
 from django.http import HttpResponseRedirect
 from django.contrib.postgres.search import SearchVector
 from .forms import UserForm, SearchForm
 from .models import Course
 # Create your views here.
 
+
 class NewCourse(CreateView):
     model = Course
     form_class = UserForm
     template_name = "new.html"
+
     def form_valid(self, form):
         if form.is_valid():
             form.save()
@@ -33,6 +35,7 @@ def new_course(request):
         userform = UserForm()
     return render(request, "new.html",{"form":userform})
 
+
 def post_search(request):
     form = SearchForm()
     query = None
@@ -50,8 +53,10 @@ def post_search(request):
                    'query': query,
                    'results': results})
 
+
 def catalog(request):
     return render(request, "index.html")
+
 
 class CoursesDetailView(DetailView):
     model = Course
@@ -64,6 +69,7 @@ class CourseEdit(UpdateView):
     model = Course
     template_name = "new_edit.html"
     form_class = UserForm
+
     def form_valid(self, form):
         if form.is_valid():
             form.save()
@@ -77,13 +83,7 @@ class CourseDelete(DeleteView):
     success_url = '../../'
     template_name = "new_edit.html"
 
+
+# Test func
 def test(request):
     return render(request, "new_edit.html")
-
-"""class CoursesListView(ListView):
-    model = Course
-    queryset = Course.objects.all()
-    template_name = "main.html"
-    context_object_name = "courses"""
-
-

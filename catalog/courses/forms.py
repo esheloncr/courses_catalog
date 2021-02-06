@@ -13,5 +13,6 @@ class UserForm(forms.ModelForm):
             "end_date": forms.TextInput(attrs={"class":"form-control"}),
         }
 
+
 class SearchForm(forms.Form):
     query = forms.CharField()
