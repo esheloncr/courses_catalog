@@ -1,11 +1,41 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.views.generic import DetailView,UpdateView,DeleteView,CreateView
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.postgres.search import SearchVector
-from .forms import UserForm, SearchForm
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from .forms import UserForm, SearchForm, RegisterUser
 from .models import Course
 # Create your views here.
 
+
+class NewUser(CreateView):
+    model = User
+    form_class = RegisterUser
+    template_name = "register.html"
+
+    def form_valid(self, form):
+        if form.is_valid():
+            form.save()
+        else:
+            return self.form_valid()
+        return HttpResponseRedirect("/")
+
+
+def login_user(request):
+    context = {}
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(request,username=username,password=password)
+
+        if user is not None:
+            login(request,user)
+            return redirect('/')
+        else:
+            messages.info(request,"Username or password are incorrect")
+    return render(request, "login.html",context)
 
 class NewCourse(CreateView):
     model = Course
@@ -15,6 +45,8 @@ class NewCourse(CreateView):
     def form_valid(self, form):
         if form.is_valid():
             form.save()
+            user = form.cleaned_data.get("username")
+            messages.success(self.request,"Account has been created" + user)
         else:
             return self.form_valid()
         return HttpResponseRedirect("/")
@@ -86,4 +118,4 @@ class CourseDelete(DeleteView):
 
 # Test func
 def test(request):
-    return render(request, "new_edit.html")
+    return render(request, "test.html")

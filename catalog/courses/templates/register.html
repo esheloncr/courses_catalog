@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}
+Register
+{% endblock title %}
+{% block content %}
+<div class="container">
+    <h1>Регистрация</h1>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <p>Придумайте логин</p>
+        {{ form.username }}
+        <p>Придумайте пароль</p>
+        {{ form.password1 }}
+        <p>Повторите пароль</p>
+        {{ form.password2 }}
+        <br>
+        <input type="Submit" class="btn btn 5" value="Регистрация">
+    </form>
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+    {{ form.errors }}
+</div>
+{% endblock content %}
