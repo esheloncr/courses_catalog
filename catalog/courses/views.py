@@ -1,26 +1,25 @@
 from django.shortcuts import render,redirect
-from django.views.generic import DetailView,UpdateView,DeleteView,CreateView
-from django.http import HttpResponseRedirect, HttpResponse
-from django.contrib.postgres.search import SearchVector
-from django.contrib.auth.models import User
+from django.views.generic import DetailView
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .forms import UserForm, SearchForm, RegisterUser
+from .forms import UserForm, RegisterUser
 from .models import Course
 # Create your views here.
 
 
-class NewUser(CreateView):
-    model = User
-    form_class = RegisterUser
-    template_name = "register.html"
-
-    def form_valid(self, form):
-        if form.is_valid():
-            form.save()
-        else:
-            return self.form_valid()
-        return HttpResponseRedirect("/")
+def register(request):
+    if request.user.is_authenticated:
+        return redirect("index")
+    if request.method == "POST":
+        reg_form = RegisterUser(request.POST)
+        if reg_form.is_valid():
+            reg_form.save()
+            messages.success(request,"Успешная регистрация")
+            return redirect("/")
+    else:
+        reg_form = RegisterUser()
+    return render(request,"register.html", {"form":reg_form})
 
 
 def login_user(request):
@@ -34,56 +33,31 @@ def login_user(request):
             login(request,user)
             return redirect('/')
         else:
-            messages.info(request,"Username or password are incorrect")
+            messages.info(request,"Неверно введены логин или пароль")
     return render(request, "login.html",context)
 
-class NewCourse(CreateView):
-    model = Course
-    form_class = UserForm
-    template_name = "new.html"
 
-    def form_valid(self, form):
-        if form.is_valid():
-            form.save()
-            user = form.cleaned_data.get("username")
-            messages.success(self.request,"Account has been created" + user)
-        else:
-            return self.form_valid()
-        return HttpResponseRedirect("/")
+@login_required(login_url="login")
+def logoutUser(request):
+    logout(request)
+    return redirect("/")
 
 
+@login_required(login_url="login")
 def new_course(request):
     if request.method == "POST":
-        userform = UserForm(request.POST)
-        if userform.is_valid():
-            userform.save()
-            title = userform.cleaned_data['title']
-            description = userform.cleaned_data['description']
-            start_date = userform.cleaned_data['start_date']
-            end_date = userform.cleaned_data['end_date']
-            author = request.user
-            return HttpResponseRedirect('/')
+        create_form = UserForm(request.POST)
+        if create_form.is_valid():
+            create_form.save()
+            title = create_form.cleaned_data['title']
+            description = create_form.cleaned_data['description']
+            start_date = create_form.cleaned_data['start_date']
+            end_date = create_form.cleaned_data['end_date']
+            messages.success(request,"Курс добавлен")
+            return redirect("/")
     else:
-        userform = UserForm()
-    return render(request, "new.html",{"form":userform})
-
-
-def post_search(request):
-    form = SearchForm()
-    query = None
-    results = []
-    if 'query' in request.GET:
-        form = SearchForm(request.GET)
-        if form.is_valid():
-            query = form.cleaned_data['query']
-            results = Course.objects.annotate(
-                search=SearchVector('title', 'body'),
-            ).filter(search=query)
-    return render(request,
-                  'main.html',
-                  {'form': form,
-                   'query': query,
-                   'results': results})
+        create_form = UserForm()
+    return render(request,"new.html",{"form":create_form})
 
 
 def catalog(request):
@@ -97,25 +71,34 @@ class CoursesDetailView(DetailView):
     context_object_name = "course"
 
 
-class CourseEdit(UpdateView):
-    model = Course
-    template_name = "new_edit.html"
-    form_class = UserForm
-
-    def form_valid(self, form):
+@login_required(login_url="login")
+def edit_course(request,pk):
+    course = Course.objects.get(course_id=pk)
+    form = UserForm(instance=course)
+    if request.method == "POST":
+        form = UserForm(request.POST, instance=course)
+        print(request.POST)
         if form.is_valid():
             form.save()
-        else:
-            return self.form_valid()
-        return HttpResponseRedirect("/")
+            return redirect("index")
+    return render(request,"new_edit.html",{"form":form})
 
 
-class CourseDelete(DeleteView):
-    model = Course
-    success_url = '../../'
-    template_name = "new_edit.html"
+@login_required(login_url="login")
+def delete_course(request, pk):
+    if not request.user.is_superuser and not request.user.is_staff:
+        messages.error(request, "У вас нет прав для удаления")
+        redirect("index")
+        return redirect("index")
+    course = Course.objects.get(course_id=pk)
+    if request.method == "POST":
+        course.delete()
+        messages.success(request,"Успешно удалено")
+        return redirect("index")
+    return render(request, "course_delete.html",{"course":course})
 
 
 # Test func
+@login_required(login_url="login")
 def test(request):
     return render(request, "test.html")
